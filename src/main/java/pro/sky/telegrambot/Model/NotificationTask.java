@@ -15,8 +15,7 @@ public class NotificationTask {
     private String notificationText;
     private LocalDateTime dateTime;
 
-    public NotificationTask(long id, long chatId, String notificationText, LocalDateTime dateTime) {
-        this.id = id;
+    public NotificationTask(long chatId, String notificationText, LocalDateTime dateTime) {
         this.chatId = chatId;
         this.notificationText = notificationText;
         this.dateTime = dateTime;

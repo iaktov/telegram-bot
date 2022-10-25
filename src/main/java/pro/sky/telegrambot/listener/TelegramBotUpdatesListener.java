@@ -8,6 +8,7 @@ import com.pengrad.telegrambot.response.SendResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.util.Pair;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import pro.sky.telegrambot.Model.NotificationTask;
@@ -26,10 +27,11 @@ import java.util.zip.DataFormatException;
 @Service
 public class TelegramBotUpdatesListener implements UpdatesListener {
 
-    private Logger logger = LoggerFactory.getLogger(TelegramBotUpdatesListener.class);
+    private final Logger logger = LoggerFactory.getLogger(TelegramBotUpdatesListener.class);
     private final NotificationTaskRepository notificationTaskRepository;
 
     static private final String NOTICE_PATTERN = "([0-9.:\\s]{16})(\\s)([\\W+|\\w+]+)";
+    static private final Pattern pattern = Pattern.compile(NOTICE_PATTERN);
 
 
     @Autowired
@@ -109,7 +111,6 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
 
     //Распознавание данных, введенных пользователем по паттерну
     public List<String> createTextAndDateForNotice(String text) throws DataFormatException {
-        Pattern pattern = Pattern.compile(NOTICE_PATTERN);
         Matcher matcher = pattern.matcher(text);
         if (matcher.matches()) {
             String date = matcher.group(1);
@@ -125,12 +126,11 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
     public void createNotification(Update update) throws DataFormatException {
         String message = update.message().text();
         long chatId = update.message().chat().id();
-        createTextAndDateForNotice(message);
         List<String> textAndDate = new ArrayList<>(createTextAndDateForNotice(message));
         String date = textAndDate.get(0);
         String text = textAndDate.get(1);
         LocalDateTime localDateTime = LocalDateTime.parse(date, DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"));
-        NotificationTask notificationTask = new NotificationTask(1, chatId, text, localDateTime);
+        NotificationTask notificationTask = new NotificationTask(chatId, text, localDateTime);
         notificationTaskRepository.save(notificationTask);
         logger.info("Notification save {}", notificationTask);
     }
