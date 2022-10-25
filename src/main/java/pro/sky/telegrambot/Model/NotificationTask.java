@@ -10,24 +10,34 @@ public class NotificationTask {
 
     @Id
     @GeneratedValue
-    private int id;
-    private int chatId;
+    private long id;
+    private long chatId;
     private String notificationText;
     private LocalDateTime dateTime;
 
-    public int getId() {
+    public NotificationTask(long chatId, String notificationText, LocalDateTime dateTime) {
+        this.chatId = chatId;
+        this.notificationText = notificationText;
+        this.dateTime = dateTime;
+    }
+
+    public NotificationTask() {
+        
+    }
+
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
-    public int getChatId() {
+    public long getChatId() {
         return chatId;
     }
 
-    public void setChatId(int chatId) {
+    public void setChatId(long chatId) {
         this.chatId = chatId;
     }
 
